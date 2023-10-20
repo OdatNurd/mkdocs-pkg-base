@@ -76,6 +76,9 @@ theme:
       accent: indigo
 
 plugins:
+  - git-revision-date-localized
+  - minify:
+      minify_html: true
   - search
   - social:
       cards_dir: images/social
