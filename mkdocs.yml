@@ -1,7 +1,8 @@
 site_name: Sublime Text Package Name
 site_author: Terence Martin (OdatNurd)
-site_url: https://mkdocs-pkg-base.nurdlabs.net
+site_url: https://mkdocs-pkg-base.odatnurd.net
 repo_url: https://github.com/OdatNurd/mkdocs-pkg-base
+edit_uri: !ENV [EDIT_URI, '']
 copyright: '&copy 2023 <a href="https://odatnurd.net">OdatNurd</a>'
 
 nav:
@@ -40,6 +41,9 @@ extra:
 theme:
   name: material
   language: en
+  # Theme overrides can be used to alter the theme based on the build; used to
+  # make dev releases have a permanent banner. Empty means no overrides.
+  custom_dir: !ENV [THEME_OVERRIDE, '']
   features:
     - navigation.sections
     - navigation.tabs
@@ -52,6 +56,7 @@ theme:
     - content.tabs.link
     - content.code.annotate
     - content.code.copy
+    - content.action.edit
   font:
     text: Roboto
     code: Roboto Mono
