@@ -2,8 +2,6 @@
 # them into the generated archives, since that is used in order to create the
 # sublime-package file.
 docs/ export-ignore
-mkdocs.yml export-ignore
-requirements.txt export-ignore
 
 # Similarly, exclude Git and GitHub related control files.
 .github/ export-ignore

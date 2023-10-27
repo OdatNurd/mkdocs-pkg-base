@@ -5,6 +5,9 @@ repo_url: https://github.com/OdatNurd/mkdocs-pkg-base
 edit_uri: !ENV [EDIT_URI, '']
 copyright: '&copy 2023 <a href="https://odatnurd.net">OdatNurd</a>'
 
+docs_dir: content
+site_dir: site
+
 nav:
   - Home:
     - "About": index.md
@@ -81,7 +84,8 @@ theme:
       accent: indigo
 
 plugins:
-  - git-revision-date-localized
+  - git-revision-date-localized:
+      fallback_to_build_date: true
   - minify:
       minify_html: true
   - search

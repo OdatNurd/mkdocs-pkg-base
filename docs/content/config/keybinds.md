@@ -13,7 +13,7 @@ you would like to change into the right hand pane and modify their value.
 
 !!! warning
 
-    remember the alamo (and that JSON is a thing). Key the items as a key/value
+    remember the Alamo (and that JSON is a thing). Key the items as a key/value
     pair list, with commas in between. Your custom file should be structured
     the same as the one on the left (but with potentially fewer things in it).
 
