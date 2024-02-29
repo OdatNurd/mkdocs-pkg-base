@@ -48,18 +48,19 @@ theme:
   # make dev releases have a permanent banner. Empty means no overrides.
   custom_dir: !ENV [THEME_OVERRIDE, '']
   features:
+    - content.action.edit
+    - content.code.annotate
+    - content.code.copy
+    - content.tabs.link
+    - content.tooltips
+    - navigation.footer
     - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
     - navigation.top
-    - navigation.footer
-    - search.suggest
     - search.highlight
     - search.share
-    - content.tabs.link
-    - content.code.annotate
-    - content.code.copy
-    - content.action.edit
+    - search.suggest
   font:
     text: Roboto
     code: Roboto Mono
@@ -95,6 +96,7 @@ plugins:
         font_family: Lilita One
 
 markdown_extensions:
+  - abbr
   - admonition
   - attr_list
   - def_list
@@ -106,8 +108,8 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
