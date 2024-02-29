@@ -17,8 +17,9 @@ create repository as appropriate.
 
 Edit `docs/mkdocs.yml`; the main part to edit is the per project configuration
 that is at the top of the file. Secondarily, `PackageName` can be modified
-everywhere, both in this file and in all of the Markdown files in the `doc`
-folder, replacing it with the actual name.
+everywhere, both in this file and in all of the Markdown files in the `doc` and
+`.github` folders, replacing it with the actual name. Note also that the files
+in `.github` may also have links that need to be adjusted.
 
 The stub contents that are put in place should be edited to have actual good
 content within them. The overall structure is set (but can be manipulated as
