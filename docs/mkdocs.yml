@@ -3,7 +3,7 @@ site_author: Terence Martin (OdatNurd)
 site_url: https://mkdocs-pkg-base.odatnurd.net
 repo_url: https://github.com/OdatNurd/mkdocs-pkg-base
 edit_uri: !ENV [EDIT_URI, '']
-copyright: '&copy 2023 <a href="https://odatnurd.net">OdatNurd</a>'
+copyright: '&copy 2024 <a href="https://odatnurd.net">OdatNurd</a>'
 
 docs_dir: content
 site_dir: site
