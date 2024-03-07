@@ -1,16 +1,18 @@
 #!/bin/env python3
 
-from typing import List, Tuple
+from typing import Dict, List, Tuple
 
 import sys
 
 from argparse import ArgumentParser, Namespace
 from collections import namedtuple
 from random import choices
-from shutil import rmtree, copy
+from shutil import rmtree, copy2, copystat
 from subprocess import run
 import string
+import re
 
+from datetime import datetime
 from os.path import abspath, dirname, exists, isdir, join
 from os.path import normpath, relpath, split
 from os import getcwd, makedirs, rename, unlink, walk
@@ -28,10 +30,17 @@ DEFAULT_REPO_URL='git@github.com:OdatNurd/mkdocs-pkg-base.git'
 DEFAULT_REPO_BRANCH='master'
 DEFAULT_SETUP_PATH='setup/'
 
+# The default version of Sublime to expand out into the template files if one
+# is not provided. This is (at time of writing) the most recent stable build.
+DEFAULT_SUBLIME_VERSION='4169'
+
 # When preparing to generate the template, a tuple of this shape is used to
 # determine what the source folder for the template is, what the destination
 # is, and what files need to be copied in order to make the package.
-TemplateData = namedtuple('TemplateData', ['source', 'destination', 'files'])
+#
+# The template data also packs a dictionary that contains the names of the
+# template variables that we support, and their values when they get expanded.
+TemplateData = namedtuple('TemplateData', ['source', 'destination', 'files', 'variables'])
 
 # When generating random suffixes for files, this is the list of characters
 # that is drawn from.
@@ -51,6 +60,22 @@ def get_template_base() -> str:
     normalize the whole thing.
     """
     return normpath(join(getcwd(), dirname(sys.argv[0]), '..'))
+
+
+def get_template_variables(args: Namespace) -> Dict[str, str]:
+    """
+    Given a validated set of command line arguments, create and return back a
+    dictionary whose keys are the names of template variables that we can
+    expand, with values as appropriate.
+    """
+    variables = {
+        'PackageName': args.package,
+        'PackageTitle': args.title,
+        'PackageURLSlug': args.url_slug,
+        'Year': str(datetime.now().year),
+        'SublimeVersion': args.sublime_version,
+    }
+    return variables
 
 
 def execute_cmd(shell_cmd: str, working_dir: str) -> str:
@@ -134,6 +159,11 @@ def get_input_file_list(args: Namespace) -> TemplateData:
     # named for the package in the current working directory.
     destination = abspath(join(getcwd(), args.package))
 
+    # Get the list of template variables that we're going to expand out in our
+    # templates. Some of these are based on command line arguments and some
+    # are based on other static data.
+    template_vars = get_template_variables(args)
+
     # If there is a local path that is the source of the template, then we
     # want to try and scan it's contents in order to get the list of files.
     if args.path:
@@ -143,10 +173,9 @@ def get_input_file_list(args: Namespace) -> TemplateData:
         # Check to see if there's a .git folder in the path so we know how to
         # handle it.
         if isdir(join(base_dir, '.git')):
-            return TemplateData(base_dir, destination, get_git_file_list(args, args.path))
+            return TemplateData(base_dir, destination, get_git_file_list(args, args.path), template_vars)
 
-        return TemplateData(base_dir, destination, get_folder_file_list(args, args.path))
-
+        return TemplateData(base_dir, destination, get_folder_file_list(args, args.path), template_vars)
 
     # We are trying to clone a specific branch from a repository to use as the
     # base; in this case, we will clone it directly into the location that we
@@ -169,7 +198,7 @@ def get_input_file_list(args: Namespace) -> TemplateData:
 
     # A git clone operation happens in place, so the source and destination
     # will end up being the same.
-    return TemplateData(destination, destination, files)
+    return TemplateData(destination, destination, files, template_vars)
 
 
 ## ----------------------------------------------------------------------------
@@ -310,6 +339,11 @@ def parse_cmd_line() -> Namespace:
     dest.add_argument('--package', '-p',
                       help='Name of the package to create from the template',
                       metavar='PackageName')
+    dest.add_argument('--require-sublime', '-r',
+                      dest='sublime_version',
+                      help=f'Minimum version of Sublime required for this package [Default: {DEFAULT_SUBLIME_VERSION}]',
+                      default=DEFAULT_SUBLIME_VERSION,
+                      metavar='build_num')
     dest.add_argument('--title', '-t',
                       help='Descriptive name of the destination package [Default: PackageName]',
                       metavar='PackageTitle')
@@ -338,7 +372,24 @@ def expand_template_contents(template: TemplateData, src: str, dst: str) -> None
     This expands out the variables from the template data in the file content
     as the file is copied.
     """
-    copy(src, dst)
+    def expand(match: re.Match) -> str:
+        return template.variables.get(match.group(1), f'{{{{{match.group(1)}}}}}')
+
+    with open(src, 'r', encoding='utf-8') as input_file:
+        # Get the entire file content into memory
+        raw = input_file.read()
+
+        # Replace everything that looks like a variable expansion; if the
+        # variable is not known, the expansion replaces it with itself so that
+        # it does not get clobbered.
+        cooked = re.sub(r"{{([^}]+)}}", lambda match: expand(match), raw)
+
+        with open(dst, 'w', encoding='utf-8') as output_file:
+            output_file.write(cooked)
+
+    # Get the mode on the source file and ensure that it's applied to the
+    # destination file.
+    copystat(src, dst)
 
 
 def handle_template_file(template: TemplateData, src: str, dst: str) -> None:
@@ -372,7 +423,8 @@ def handle_template_file(template: TemplateData, src: str, dst: str) -> None:
         makedirs(dst_path, exist_ok=True)
 
     # If the source file is binary, then we just need to copy the data over
-    # without performing any expansions on it.
+    # without performing any expansions on it. The copy attempts to keep the
+    # same metadata as the source where possible.
     if is_binary(src):
         # Do nothing if the filenames are different; we're working with an in
         # place template expansion via git in that case; nothing to do.
@@ -380,7 +432,7 @@ def handle_template_file(template: TemplateData, src: str, dst: str) -> None:
             return print(f'SKIP: {rel_name} [Binary]')
 
         print(f'Copy: {rel_name}')
-        return copy(src, dst)
+        return copy2(src, dst)
 
     # The file is not binary, so we need to expand template variables within
     # the content as we copy it.
