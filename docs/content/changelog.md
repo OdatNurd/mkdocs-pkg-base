@@ -1,6 +1,6 @@
 ---
 title: Release History
-description: The release history for PackageName
+description: The release history for {{PackageName}}
 ---
 
 # Changelog

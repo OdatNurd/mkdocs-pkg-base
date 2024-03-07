@@ -1,11 +1,12 @@
 ---
-title: Configuring PackageName
-description: Available configuration settings for PackageName
+title: Configuring {{PackageName}}
+description: Available configuration settings for {{PackageName}}
 ---
 
 ## Opening Settings
 
-You would go to `Preferences > Settings > Package Name` and choose the settings
+You would go to `Preferences > Settings > {{PackageName}}` and choose the
+settings
 item; then they would appear here.
 
 Remind people that the default settings on the left are applied; copy any you

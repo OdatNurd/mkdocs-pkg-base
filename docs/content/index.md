@@ -3,10 +3,11 @@ title: Package Purpose Here
 description: The description of what this package is and what it's for goes here.
 ---
 
-# About PackageName
+# About {{PackageName}}
 
 This is the page that talks a little bit about what this package is actually for
-and what it actually does.
+and what it actually does. Possibly also mention that it requires Sublime Text
+build {{SublimeVersion}} at a minimum.
 
 This page can provide a couple of screenshots, and overview of the package,
 what version of Sublime is required, etc.

@@ -1,12 +1,12 @@
 ---
-title: Key Bindings for PackageName
-description: Controlling PackageName with custom key buindings
+title: Key Bindings for {{PackageName}}
+description: Controlling {{PackageName}} with custom key buindings
 ---
 
 ## Opening Settings
 
-You would go to `Preferences > Settings > Package Name` and choose the keybind
-item; then they would appear here.
+You would go to `Preferences > Settings > {{PackageName}}` and choose the
+keybind item; then they would appear here.
 
 Remind people that the default key bindings on the left are applied; copy any
 you would like to change into the right hand pane and modify their value.

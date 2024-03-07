@@ -72,11 +72,11 @@ Branch Deployments:
 
     - Environment:
         - Production:
-            EDIT_URI:       edit/master/docs
+            EDIT_URI:       edit/master/docs/content
             PYTHON_VERSION: 3.11
 
         - Preview:
-            EDIT_URI:       edit/develop/docs
+            EDIT_URI:       edit/develop/docs/content
             PYTHON_VERSION: 3.11
             THEME_OVERRIDE: overrides
 

@@ -1,6 +1,6 @@
 ---
 title: Frequently Asked Questions
-description: Frequently Asked Questions about PackageName
+description: Frequently Asked Questions about {{PackageName}}
 ---
 
 # Frequently Asked Questions

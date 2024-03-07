@@ -13,7 +13,7 @@ assignees: OdatNurd
 
 ### Expected Behaviour
 
-[How would this feature be used in PackageName?]
+[How would this feature be used in {{PackageName}}?]
 
 ### Extra information
 

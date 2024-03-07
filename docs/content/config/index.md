@@ -1,9 +1,9 @@
 ---
-title: Configuring PackageName
-description: Customizing your PackageName installation
+title: Configuring {{PackageName}}
+description: Customizing your {{PackageName}} installation
 ---
 
-As with most Sublime Text packages, you can configure PackageName to work
+As with most Sublime Text packages, you can configure {{PackageName}} to work
 better for you.
 
 This includes applying specific [settings](settings.md) or applying a custom

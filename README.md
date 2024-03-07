@@ -1,4 +1,4 @@
-# PackageName
+# {{PackageName}}
 
 This is where the README information for the package goes, which is shown to
 people on GitHub and is referenced from the Package Control website for the
@@ -13,7 +13,15 @@ The screenshots can be elided from the documentation if needed by telling
 `mkdocs` what files in the `docs` folder it should not handle. There is no
 example of that currently (but, you know, add one when you do the thing above).
 
+This package requires, at minimum, Sublime Text version {{SublimeVersion}}
+
+TODO:
+    - sandbox page with common stuff we will want like the admonition list and
+      the like.
+    - Ensure all pages are decent stubs, unlike what they are right now
+        - this includes verifying the social icons as well
+
 ---
 
-For more information about PackageName, please see
-[the online documentation](https://mkdocs-pkg-base.odatnurd.net).
+For more information about {{PackageName}}, please see
+[the online documentation](https://{{PackageURLSlug}}.odatnurd.net).

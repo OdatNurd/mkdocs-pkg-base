@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a bug in PackageName
+about: Report a bug in {{PackageName}}
 title: "[BUG]"
 labels: bug
 assignees: OdatNurd
@@ -30,6 +30,6 @@ assignees: OdatNurd
 
 [The environment you experienced this bug in.]
 
-- Sublime Text build: [4169]
-- PackageName version: v[1.0.0]
+- Sublime Text build: [{{SublimeVersion}}]
+- {{PackageName}} version: v[1.0.0]
 - Operating System: [Windows/MacOS/Linux]

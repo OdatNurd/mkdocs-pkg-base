@@ -1,12 +1,12 @@
 ---
-title: Installing PackageName
-description: Installing the PackageName package for Sublime Text
+title: Installing {{PackageName}}
+description: Installing the {{PackageName}} package for Sublime Text
 ---
 
-# Installing PackageName
+# Installing {{PackageName}}
 
 You can install the package in a couple of different ways. You require
-`Sublime Text Build >=XXXX+` in order to install.
+`Sublime Text Build >={{SublimeVersion}}+` in order to install.
 
 
 ## Package Control

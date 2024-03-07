@@ -1,9 +1,9 @@
-site_name: Sublime Text Package Name
+site_name: {{PackageTitle}}
 site_author: Terence Martin (OdatNurd)
-site_url: https://mkdocs-pkg-base.odatnurd.net
-repo_url: https://github.com/OdatNurd/mkdocs-pkg-base
+site_url: https://{{PackageURLSlug}}.odatnurd.net
+repo_url: https://github.com/OdatNurd/{{PackageName}}
 edit_uri: !ENV [EDIT_URI, '']
-copyright: '&copy 2024 <a href="https://odatnurd.net">OdatNurd</a>'
+copyright: '&copy {{Year}} <a href="https://odatnurd.net">OdatNurd</a>'
 
 docs_dir: content
 site_dir: site
@@ -18,7 +18,8 @@ nav:
     - "Settings": config/settings.md
     - "Key Bindings": config/keybinds.md
   - Usage:
-    - "Using PackageName": usage/index.md
+    - "Using {{PackageName}}": usage/index.md
+    - "QuickStart": usage/quickstart.md
   - "FAQ": faq.md
   - Changelog:
     - "Changelog": changelog.md
