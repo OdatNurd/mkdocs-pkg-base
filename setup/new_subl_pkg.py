@@ -11,10 +11,11 @@ from shutil import rmtree, copy
 from subprocess import run
 import string
 
-
 from os.path import abspath, dirname, exists, isdir, join
 from os.path import normpath, relpath, split
 from os import getcwd, makedirs, rename, unlink, walk
+
+from binaryornot.check import is_binary
 
 
 ## ----------------------------------------------------------------------------
@@ -270,8 +271,7 @@ def parse_cmd_line() -> Namespace:
     arguments.
     """
     parser = ArgumentParser(
-        description="Scaffold out a new Sublime Text package from a template",
-        epilog="I like the boob thing"
+        description="Scaffold out a new Sublime Text package from a template"
     )
 
     # Set up arguments that control where our input comes from
@@ -329,10 +329,23 @@ def parse_cmd_line() -> Namespace:
 ## ----------------------------------------------------------------------------
 
 
-def handle_template_file(src: str, dst: str) -> None:
+def expand_template_contents(template: TemplateData, src: str, dst: str) -> None:
     """
-    Given a source and destination file, copy the source to the destination,
+    Given a template data structure and a source and destination file where the
+    source file is known to be text, copy the source to the destination,
     expanding out any template variables in the content along the way.
+
+    This expands out the variables from the template data in the file content
+    as the file is copied.
+    """
+    copy(src, dst)
+
+
+def handle_template_file(template: TemplateData, src: str, dst: str) -> None:
+    """
+    Given a template data structure and a source and destination file,
+    determine what kind of file the source is and either copy it directly or
+    copy it while expanding template variables within.
 
     When the source and destination file (not counting the path) are the same
     file, the data is copied and transformed, and the job is considered
@@ -341,21 +354,38 @@ def handle_template_file(src: str, dst: str) -> None:
     If the source and destination files have different file names, then the
     file is copied and transformed into the new file, and then the source file
     is deleted and the destination file is renamed to replace it.
+
+    The function is smart enough to not bother creating interim temporary files
+    for files that don't need one (e.g. when handling a binary file that is
+    already in the correct location).
     """
     src_path, src_file = split(src)
     dst_path, dst_file = split(dst)
 
-    print(f'{src_file} => {dst_file}')
+    # For display purposes, get the name of the output file relative to the
+    # folder that we're outputting it top.
+    rel_name = relpath(join(dst_path, src_file), template.destination)
 
-    # Ensure that the folder that we want to put the file into actually
-    # exists.
-    makedirs(dst_path, exist_ok=True)
+    # If the source and destination folders are not the same, then make sure
+    # that the destination folder exists so that we can copy files there.
+    if src_path != dst_path:
+        makedirs(dst_path, exist_ok=True)
 
-    # Copy the source file to the destination file
-    #   TODO: This should check if the file is text, and if so we need to
-    #         do something similar to this manually, so that we can get at the
-    #         content.
-    copy(src, dst)
+    # If the source file is binary, then we just need to copy the data over
+    # without performing any expansions on it.
+    if is_binary(src):
+        # Do nothing if the filenames are different; we're working with an in
+        # place template expansion via git in that case; nothing to do.
+        if src_file != dst_file:
+            return print(f'SKIP: {rel_name} [Binary]')
+
+        print(f'Copy: {rel_name}')
+        return copy(src, dst)
+
+    # The file is not binary, so we need to expand template variables within
+    # the content as we copy it.
+    print(f'Xpnd: {rel_name}')
+    expand_template_contents(template, src, dst)
 
     # If the source and destination file have different names, then we need to
     # delete the source file and rename the destination to be that name; this
@@ -373,8 +403,6 @@ def expand_template(args: Namespace, template: TemplateData) -> None:
     as editing files "in place" should the source and destination be the same
     folder (such as when we got the source via a git clone).
     """
-    TemplateData = namedtuple('TemplateData', ['source', 'destination', 'files'])
-
     print(f'\nGenerating template package')
     print(f'Template Path: {template.source}')
     print(f' Package Path: {template.destination}\n')
@@ -391,7 +419,7 @@ def expand_template(args: Namespace, template: TemplateData) -> None:
             dst_file = f'{dst_file}-{"".join(choices(KEY_CHARACTERS, k=12))}'
 
         # Copy the file over, doing any expansions needed
-        handle_template_file(src_file, dst_file)
+        handle_template_file(template, src_file, dst_file)
 
 
 ## ----------------------------------------------------------------------------
