@@ -174,6 +174,36 @@ def get_input_file_list(args: Namespace) -> TemplateData:
 ## ----------------------------------------------------------------------------
 
 
+def name_to_slug(input_name: str) -> str:
+    """
+    Given a textual name of a package, assumed to be in CamelCase, return back
+    a version of the name where all of the text is lower case and everything is
+    split at upper case characters.
+
+    Any run of uppercase characters is only split once; so 'URL' becomes 'url'
+    and not 'u-r-l'.
+    """
+    # If the name is all upper case, just convert it to lower case and return
+    # directly.
+    if input_name.isupper():
+        return input_name.lower()
+
+    # Build up the name character by character. Uppercase characters are
+    # replaced with a dash and a lower case version of themselves, except for
+    # the first one in the name, which should just be lower case.
+    name = input_name[0].lower()
+    last_upper = False
+    for c in input_name[1:]:
+        if c.isupper() and not last_upper:
+            name += '-'
+            name += c.lower()
+        else:
+            name += c
+        last_upper = c.isupper()
+
+    return name
+
+
 def validate_arguments(parser: ArgumentParser, args: Namespace) -> Namespace:
     """
     Given a set of parsed command line arguments, verify that all values that
@@ -218,6 +248,16 @@ def validate_arguments(parser: ArgumentParser, args: Namespace) -> Namespace:
     if args.skip:
         args.skip = join(args.skip, '')
 
+    # If there is no title specified, then the title will have the same
+    # value as the package name.
+    if not args.title:
+        args.title = args.package
+
+    # If there is no URL slug, create a version that's based on the name of the
+    # package converted to lower case and with words separated by dashes.
+    if not args.url_slug:
+        args.url_slug = name_to_slug(args.package)
+
     return args
 
 
@@ -254,16 +294,14 @@ def parse_cmd_line() -> Namespace:
                      dest='path',
                      help='Use template rooted in a local folder',
                      metavar='path')
+    src.add_argument('--use-installed', '-i',
+                     help='Use the version of the template from the script installation folder',
+                     const=get_template_base(),
+                     action='store_const')
     src.add_argument('--skip', '-s',
                      help=f'Relative path within the template that contains setup information [Default: {DEFAULT_SETUP_PATH}]',
                      metavar='path',
                      default=DEFAULT_SETUP_PATH)
-
-    src.add_argument('--use-installed', '-i',
-                        help='Use the version of the template from the script installation folder',
-                        const=get_template_base(),
-                        action='store_const')
-
 
     dest = parser.add_argument_group(
         title="Package Output",
@@ -272,6 +310,13 @@ def parse_cmd_line() -> Namespace:
     dest.add_argument('--package', '-p',
                       help='Name of the package to create from the template',
                       metavar='PackageName')
+    dest.add_argument('--title', '-t',
+                      help='Descriptive name of the destination package [Default: PackageName]',
+                      metavar='PackageTitle')
+    dest.add_argument('--slug', '-u',
+                      dest='url_slug',
+                      help='The URL slug for the subdomain of the project [Default: package-name]',
+                      metavar='url-slug')
     dest.add_argument('--no-skip', '-n',
                       help="Disable skipping the configured skip folder when copying the template",
                       default=False,
