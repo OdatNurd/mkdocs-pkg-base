@@ -1,6 +1,6 @@
 #!/bin/env python3
 
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import sys
 
@@ -103,7 +103,7 @@ def path_filter(args: Namespace, file_list: List[str]) -> List[str]:
     system scan or git calls to those which we know we should not include.
     """
     return filter(lambda n: n and (not args.skip or not n.startswith(args.skip)),
-                  file_list)
+                      file_list)
 
 
 def get_git_file_list(args: Namespace, repo_dir: str) -> List[str]:
@@ -142,7 +142,7 @@ def get_folder_file_list(args: Namespace, base_dir: str) -> List[str]:
     # Walk through the whole of the base directory looking for files. Paths
     # that fall out are absolute, so we need to make them relative to the base
     # folder (unless it's already the base)
-    for (path, dirs, files) in walk(base_dir, followlinks=True):
+    for (path, _, files) in walk(base_dir, followlinks=True):
         r_path = relpath(path, base_dir) if path != base_dir else ""
         for name in files:
             result.append(join(r_path, name))
@@ -448,7 +448,7 @@ def handle_template_file(template: TemplateData, src: str, dst: str) -> None:
         rename(dst, src)
 
 
-def expand_template(args: Namespace, template: TemplateData) -> None:
+def expand_template(template: TemplateData) -> None:
     """
     Do the work of actually expanding the template mentioned in the template
     data. This can both copy files from the source to the destination as well
@@ -498,7 +498,7 @@ try:
     tpl_setup = get_input_file_list(args)
 
     # Expand the template out now
-    expand_template(args, tpl_setup)
+    expand_template(tpl_setup)
 
 except:
     print('error encountered; cleaning up')

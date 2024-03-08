@@ -1,7 +1,7 @@
-site_name: {{PackageTitle}}
+site_name: '{{PackageTitle}}'
 site_author: Terence Martin (OdatNurd)
-site_url: https://{{PackageURLSlug}}.odatnurd.net
-repo_url: https://github.com/OdatNurd/{{PackageName}}
+site_url: 'https://{{PackageURLSlug}}.odatnurd.net'
+repo_url: 'https://github.com/OdatNurd/{{PackageName}}'
 edit_uri: !ENV [EDIT_URI, '']
 copyright: '&copy {{Year}} <a href="https://odatnurd.net">OdatNurd</a>'
 
